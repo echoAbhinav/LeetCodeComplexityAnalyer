@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeetCode Complexity Analyzer</title>
+  <link rel="stylesheet" href="popup.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <span class="logo-icon" aria-label="Logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="logo-gradient" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#6366f1"/>
+              <stop offset="1" stop-color="#fbc2eb"/>
+            </linearGradient>
+          </defs>
+          <circle cx="16" cy="16" r="15" fill="url(#logo-gradient)" stroke="#fff" stroke-width="2"/>
+          <path d="M10 21c2-3 6-3 8 0" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+          <path d="M13 13a3 3 0 1 1 6 0" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="header-title">LeetCode <span class="highlight">Complexity</span> Analyzer</span>
+      <label class="theme-switch">
+        <input type="checkbox" id="darkModeToggle">
+        <span class="slider">
+          <span class="slider-icon slider-sun" aria-label="Light mode">☀️</span>
+          <span class="slider-icon slider-moon" aria-label="Dark mode">🌙</span>
+        </span>
+      </label>
+    </div>
+
+    <div class="input-group">
+      <label for="language">Language:</label>
+      <select id="language">
+        <option>Python</option>
+        <option>JavaScript</option>
+        <option>Java</option>
+        <option>C++</option>
+        <option>C#</option>
+        <option>Go</option>
+        <option>TypeScript</option>
+        <option>Ruby</option>
+        <option>Swift</option>
+        <option>Kotlin</option>
+      </select>
+    </div>
+
+    <textarea id="code" rows="10" placeholder="Paste your code here..."></textarea>
+
+    <div class="actions">
+      <button id="analyzeBtn" class="primary-btn">
+        <span class="btn-icon">🔍</span>
+        Analyze Complexity
+      </button>
+      <button id="fetchBtn" class="secondary-btn">
+        <span class="btn-icon">⤵️</span>
+        Auto-Fetch from LeetCode
+      </button>
+      <label class="ai-toggle">
+        <input type="checkbox" id="aiToggle" checked>
+        <span class="toggle-slider"></span>
+        <span>Use AI</span>
+      </label>
+    </div>
+
+    <div id="result" class="result-card"></div>
+    <div id="error" class="error-message"></div>
+
+    <div class="footer">
+      <span style="font-weight:600; color:var(--primary); vertical-align:middle;">⚡</span>
+      LeetCode Complexity Analyzer <span style="opacity:0.7;">by</span> <span style="font-weight:600; color:var(--primary-dark);">echoabhinav</span> <span style="opacity:0.6;">• v1.0</span>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
