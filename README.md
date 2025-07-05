@@ -18,7 +18,8 @@ A modern Chrome extension that analyzes the **time and space complexity** of you
 
 > _Add your screenshots here!_
 
----
+![image](https://github.com/user-attachments/assets/2ca01ce4-5416-4cdc-afef-85b7843168a4)
+
 
 ## 🚀 Installation
 
