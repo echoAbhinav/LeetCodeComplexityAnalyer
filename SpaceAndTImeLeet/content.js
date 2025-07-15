@@ -1,8 +1,7 @@
-// Enhanced LeetCode code extraction for both old and new interfaces
 function getLeetCodeCode() {
   console.log('Attempting to extract LeetCode code...');
   
-  // Method 1: Try Monaco Editor (New LeetCode interface)
+  //Monaco Editor
   try {
     if (window.monaco && window.monaco.editor) {
       const editors = window.monaco.editor.getEditors();
@@ -18,7 +17,7 @@ function getLeetCodeCode() {
     console.log('Monaco editor extraction failed:', e);
   }
 
-  // Method 2: Try CodeMirror (Classic LeetCode interface)
+  //CodeMirror
   try {
     const codeMirrorElement = document.querySelector('.CodeMirror');
     if (codeMirrorElement && codeMirrorElement.CodeMirror) {
@@ -32,7 +31,7 @@ function getLeetCodeCode() {
     console.log('CodeMirror instance extraction failed:', e);
   }
 
-  // Method 3: Try to find CodeMirror lines manually
+  //find CodeMirror lines manually
   try {
     const codeMirrorLines = document.querySelectorAll('.CodeMirror-line');
     if (codeMirrorLines.length > 0) {
@@ -47,10 +46,8 @@ function getLeetCodeCode() {
   } catch (e) {
     console.log('CodeMirror lines extraction failed:', e);
   }
-
-  // Method 4: Try React-based editor (newer LeetCode versions)
+  
   try {
-    // Look for textarea or contenteditable elements
     const textareas = document.querySelectorAll('textarea, [contenteditable="true"]');
     for (const textarea of textareas) {
       const code = textarea.value || textarea.textContent || textarea.innerText;
@@ -63,7 +60,6 @@ function getLeetCodeCode() {
     console.log('Textarea extraction failed:', e);
   }
 
-  // Method 5: Try to find editor by class names (various LeetCode versions)
   try {
     const editorSelectors = [
       '.monaco-editor .view-lines',
@@ -90,7 +86,6 @@ function getLeetCodeCode() {
     console.log('Selector-based extraction failed:', e);
   }
 
-  // Method 6: Try to find any pre or code elements with substantial content
   try {
     const codeElements = document.querySelectorAll('pre, code, .ace_text-layer');
     for (const element of codeElements) {
@@ -105,12 +100,10 @@ function getLeetCodeCode() {
     console.log('Pre/code element extraction failed:', e);
   }
 
-  // Method 7: Try to access via React fiber (advanced method)
   try {
     const reactElements = document.querySelectorAll('[data-reactroot] *');
     for (const element of reactElements) {
       if (element._reactInternalFiber || element._reactInternalInstance) {
-        // This is a React element, try to find editor state
         const fiber = element._reactInternalFiber || element._reactInternalInstance;
         if (fiber && fiber.memoizedProps && fiber.memoizedProps.value) {
           const code = fiber.memoizedProps.value;
@@ -129,13 +122,12 @@ function getLeetCodeCode() {
   return null;
 }
 
-// Enhanced function to detect if we're on a LeetCode problem page
 function isLeetCodeProblemPage() {
   const url = window.location.href;
   const isLeetCodeDomain = url.includes('leetcode.com');
   const isProblemPage = url.includes('/problems/') || url.includes('/contest/') || url.includes('/explore/');
   
-  // Also check for editor presence
+
   const hasEditor = document.querySelector('.CodeMirror') || 
                    document.querySelector('.monaco-editor') ||
                    document.querySelector('[data-testid="code-editor"]') ||
@@ -145,7 +137,6 @@ function isLeetCodeProblemPage() {
   return isLeetCodeDomain && (isProblemPage || hasEditor);
 }
 
-// Wait for page to load and editor to be ready
 function waitForEditor(maxAttempts = 10, attempt = 0) {
   return new Promise((resolve) => {
     if (attempt >= maxAttempts) {
@@ -168,7 +159,6 @@ function waitForEditor(maxAttempts = 10, attempt = 0) {
   });
 }
 
-// Message listener for extension communication
 if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
   chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     console.log('Content script received message:', msg);
@@ -184,7 +174,6 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
         return;
       }
 
-      // Wait for editor to be ready, then extract code
       waitForEditor().then((editorReady) => {
         if (!editorReady) {
           console.log('Editor not ready after waiting');
@@ -196,7 +185,6 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
           return;
         }
 
-        // Try to extract code
         const code = getLeetCodeCode();
         console.log('Extracted code:', code ? code.length + ' characters' : 'null');
         
@@ -207,20 +195,17 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
         });
       });
       
-      // Send response to keep the message channel open
       sendResponse({ received: true });
     }
   });
 }
 
-// Auto-inject detection on page load
 document.addEventListener('DOMContentLoaded', () => {
   console.log('LeetCode Complexity Analyzer content script loaded');
   
   if (isLeetCodeProblemPage()) {
     console.log('Detected LeetCode problem page');
     
-    // Wait a bit for dynamic content to load
     setTimeout(() => {
       const code = getLeetCodeCode();
       if (code) {
@@ -230,7 +215,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// Also try when page changes (for SPA navigation)
 let currentUrl = window.location.href;
 setInterval(() => {
   if (window.location.href !== currentUrl) {
@@ -243,7 +227,6 @@ setInterval(() => {
   }
 }, 1000);
 
-// Listen for editor changes (Monaco editor)
 if (window.monaco && window.monaco.editor) {
   const checkForEditors = setInterval(() => {
     const editors = window.monaco.editor.getEditors();
@@ -251,7 +234,6 @@ if (window.monaco && window.monaco.editor) {
       console.log('Monaco editors detected:', editors.length);
       clearInterval(checkForEditors);
       
-      // Add listeners to editors
       editors.forEach((editor, index) => {
         editor.onDidChangeModelContent(() => {
           console.log(`Monaco editor ${index} content changed`);
@@ -260,6 +242,5 @@ if (window.monaco && window.monaco.editor) {
     }
   }, 1000);
   
-  // Clear interval after 30 seconds
   setTimeout(() => clearInterval(checkForEditors), 30000);
 }
