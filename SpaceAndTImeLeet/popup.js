@@ -1,6 +1,5 @@
 const GEMINI_API_KEY = ''; // Replace with your Gemini API key
 
-// Dark mode logic
 function setDarkMode(enabled) {
   if (enabled) {
     document.body.classList.add('dark-mode');
@@ -89,12 +88,11 @@ ${code}`;
 
     const text = data.candidates[0].content.parts[0].text || '';
     
-    // Try to extract JSON from the response
     const jsonMatch = text.match(/\{[\s\S]*?\}/);
     if (jsonMatch) {
       try {
         const parsed = JSON.parse(jsonMatch[0]);
-        // Validate that required fields exist
+        
         if (!parsed.time || !parsed.space) {
           throw new Error('Missing required complexity fields');
         }
@@ -108,7 +106,7 @@ ${code}`;
         throw new Error('Failed to parse AI response JSON');
       }
     } else {
-      // If no JSON found, try to parse the entire response
+    
       try {
         const parsed = JSON.parse(text);
         return {
@@ -137,7 +135,6 @@ function staticComplexityAnalysis(code, language) {
   let time = 'O(1)';
   let space = 'O(1)';
   
-  // More sophisticated static analysis
   const lines = code.split('\n');
   let nestedLoops = 0;
   let hasRecursion = false;
@@ -147,28 +144,25 @@ function staticComplexityAnalysis(code, language) {
   for (let line of lines) {
     line = line.trim();
     
-    // Count nested loops
+   
     if (/for\s*\(|while\s*\(|do\s*\{/.test(line)) {
       nestedLoops++;
     }
     
-    // Check for recursion
     if (/return\s+\w+\s*\(/.test(line) || /\w+\s*\(.*\)\s*\+|\w+\s*\(.*\)\s*\*/.test(line)) {
       hasRecursion = true;
     }
     
-    // Check for arrays/lists
+    
     if (/\[\]|new\s+Array|List|ArrayList|Vector/.test(line)) {
       hasArrays = true;
     }
-    
-    // Check for hash maps/sets
+  
     if (/Map|HashMap|Set|HashSet|Dictionary|dict/.test(line)) {
       hasHashMap = true;
     }
   }
   
-  // Determine time complexity
   if (hasRecursion && /fibonacci|fib/.test(code.toLowerCase())) {
     time = 'O(2^n)';
   } else if (hasRecursion) {
@@ -183,11 +177,10 @@ function staticComplexityAnalysis(code, language) {
     time = 'O(n log n)';
   }
   
-  // Determine space complexity
   if (hasHashMap || hasArrays) {
     space = 'O(n)';
   } else if (hasRecursion) {
-    space = 'O(n)'; // Stack space
+    space = 'O(n)';
   }
   
   return { time, space, optimalTime: time, optimalSpace: space };
@@ -262,7 +255,6 @@ document.getElementById('analyzeBtn').onclick = async function() {
     return;
   }
   
-  // Validate API key if AI is enabled
   if (useAI && (!GEMINI_API_KEY || GEMINI_API_KEY.includes('your-api-key'))) {
     showError('Please set your Gemini API key in the code.');
     return;
@@ -292,7 +284,6 @@ document.getElementById('analyzeBtn').onclick = async function() {
     console.error('Analysis error:', e);
     showError('Analysis failed: ' + (e.message || 'Unknown error'));
     
-    // Fallback to static analysis
     try {
       result = staticComplexityAnalysis(code, language);
       showResult(result, false);
@@ -307,13 +298,12 @@ document.getElementById('analyzeBtn').onclick = async function() {
 document.getElementById('fetchBtn').onclick = function() {
   clearError();
   
-  // Show loading state for fetch button
+ 
   const fetchBtn = document.getElementById('fetchBtn');
   const originalText = fetchBtn.textContent;
   fetchBtn.disabled = true;
   fetchBtn.innerHTML = `<span class="btn-icon">⏳</span> Fetching...`;
   
-  // Send message to content script to get code
   if (typeof chrome !== 'undefined' && chrome.tabs && chrome.runtime) {
     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
       if (chrome.runtime.lastError) {
@@ -324,7 +314,7 @@ document.getElementById('fetchBtn').onclick = function() {
       }
       
       if (tabs[0]?.id) {
-        // Check if tab URL is LeetCode
+        
         const tab = tabs[0];
         if (!tab.url || !tab.url.includes('leetcode.com')) {
           showError('Please navigate to a LeetCode problem page first.');
@@ -340,7 +330,6 @@ document.getElementById('fetchBtn').onclick = function() {
           if (chrome.runtime.lastError) {
             showError('Failed to connect to LeetCode page. Try refreshing the page and make sure you\'re on a LeetCode problem page.');
           } else if (response && response.received) {
-            // Message was received, wait for the code response
             setTimeout(() => {
               if (document.getElementById('code').value.trim() === '') {
                 showError('No code found. Make sure there\'s code in the LeetCode editor.');
@@ -361,7 +350,6 @@ document.getElementById('fetchBtn').onclick = function() {
   }
 };
 
-// Listen for code from content script
 if (typeof chrome !== 'undefined' && chrome.runtime) {
   chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
     console.log('Popup received message:', msg);
@@ -381,8 +369,7 @@ if (typeof chrome !== 'undefined' && chrome.runtime) {
         showError('No code found in the editor. Make sure you have code written in the LeetCode editor.');
       } else {
         clearError();
-        
-        // Show success message
+      
         const successMsg = document.createElement('div');
         successMsg.className = 'success-message show';
         successMsg.textContent = `✓ Code fetched successfully (${code.length} chars)`;
@@ -394,14 +381,12 @@ if (typeof chrome !== 'undefined' && chrome.runtime) {
         
         codeTextarea.parentNode.insertBefore(successMsg, codeTextarea.nextSibling);
         
-        // Remove success message after 3 seconds
         setTimeout(() => {
           if (successMsg.parentNode) {
             successMsg.parentNode.removeChild(successMsg);
           }
         }, 3000);
         
-        // Auto-analyze if AI is enabled
         if (document.getElementById('aiToggle')?.checked) {
           setTimeout(() => {
             document.getElementById('analyzeBtn').click();
